@@ -1,7 +1,16 @@
 #include <iostream>
+#include <string>
 #include "sqlite/sqlite3.h"
 
+constexpr std::string DBLIB_TEXT = "TEXT";
+constexpr std::string DBLIB_INT = "INT";
+constexpr std::string DBLIB_CHAR = "CHAR";
+
 namespace dblib {
+    enum DBLIBTYPE {
+        TEXT = 0, INT, CHAR
+    };
+
     class Database {
     protected:
         sqlite3* db;
@@ -38,5 +47,31 @@ namespace dblib {
 
         // SQL: SELECT * FROM {table};
         std::string selectAllData(const std::string& table);
+    };
+
+    //std::string tableDefinition = "ID INTEGER PRIMARY KEY AUTOINCREMENT, "
+    //              "NAME TEXT NOT NULL, "
+    //              "LNAME TEXT NOT NULL, "
+    //              "ADDRESS CHAR(50), "
+    //              "AGE INT NOT NULL, "
+    //              "GRADE CHAR(1)";
+
+    class TableDefinition {
+    protected:
+        std::string sqlCode;
+    public:
+        TableDefinition(bool hasID);
+
+        template <DBLIBTYPE>
+        void AddColumn(const std::string& name, bool isNullable);
+
+        template <>
+        void AddColumn<TEXT>(const std::string& name, bool isNullable);
+
+        template <>
+        void AddColumn<INT>(const std::string& name, bool isNullable);
+
+        template<>
+        void AddColumn<CHAR>(const std::string& name, bool isNullable);
     };
 }

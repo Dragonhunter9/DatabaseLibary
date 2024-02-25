@@ -1,6 +1,14 @@
 #include "dblib.h"
 
 namespace dblib {
+    static void ReplaceAll(std::string& str, const std::string& from, const std::string& to) {
+        size_t start_pos = 0;
+        while ((start_pos = str.find(from, start_pos)) != std::string::npos) {
+            str.replace(start_pos, from.length(), to);
+            start_pos += to.length(); // Handles case where 'to' is a substring of 'from'
+        }
+    }
+
     int Database::selectCallback(void* data, int argc, char** argv, char** azColName) {
         std::string& output = *static_cast<std::string*>(data);
         for (int i = 0; i < argc; i++) {
@@ -109,6 +117,33 @@ namespace dblib {
 
         sqlite3_close(db);
         return "";
+    }
+
+    TableDefinition::TableDefinition(bool hasID) {
+        if (hasID) {
+            sqlCode += "ID INTEGER PRIMARY KEY AUTOINCREMENT;";
+        }
+    }
+
+    template <DBLIBTYPE>
+    void TableDefinition::AddColumn(const std::string& name, bool isNullable) { throw std::runtime_error;  }
+
+    template <>
+    void TableDefinition::AddColumn<TEXT>(const std::string& name, bool isNullable) {
+        ReplaceAll(sqlCode, ";", ",");
+        sqlCode += name + " TEXT " + (isNullable ? "NOT NULL" : "NULL") + ";";
+    }
+
+    template <>
+    void TableDefinition::AddColumn<INT>(const std::string& name, bool isNullable) {
+        ReplaceAll(sqlCode, ";", ",");
+        sqlCode += name + " INT " + (isNullable ? "NOT NULL" : "NULL") + ";";
+    }
+
+    template<>
+    void TableDefinition::AddColumn<CHAR>(const std::string& name, bool isNullable) {
+        ReplaceAll(sqlCode, ";", ",");
+        sqlCode += name + " CHAR(10) " + (isNullable ? "NOT NULL" : "NULL") + ";";
     }
 }
 
