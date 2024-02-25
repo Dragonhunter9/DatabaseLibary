@@ -24,6 +24,7 @@
     <ProjectGuid>{e546dc4e-ce7e-4ae7-8f6d-120c6b478959}</ProjectGuid>
     <RootNamespace>SimpleSQLProject</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+    <ProjectName>DBLib</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
